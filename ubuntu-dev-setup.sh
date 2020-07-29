@@ -8,15 +8,17 @@ function failure()
 }
 
 function aptinstall {
+    echo ===========================================
     echo installing $1
     shift
-    sudo apt-get -y -f install "$@" >$LOG_SCRIPT 2>$LOG_SCRIPT
+    sudo apt-get -y -f install "$@"
 }
 
 function snapinstall {
+    echo ===========================================
     echo installing $1
     shift
-    sudo snap install "$@" >$LOG_SCRIPT 2>$LOG_SCRIPT
+    sudo snap install "$@"
 }
 APTGETCMD=`echo "sudo apt-get $QUIET_OPT $SIM_OPT"`
 
@@ -206,6 +208,7 @@ function update_packages()
 function install_mandatories()
 {
 	aptinstall Synaptic synaptic		#User-friendly package manager 
+	aptinstall SNAP snap
 	aptinstall WGET wget
 	aptinstall SSH ssh
     aptinstall CURL curl
@@ -236,13 +239,18 @@ fi
 #***********************************************************************************
 #	CREATE TEMPORARY FOLDER
 #***********************************************************************************
-cd ~
-if [ -a ./post_install_tmp ]; then
-    echo "Removendo arquivos temporários de instalações anteriores..."
-    rm -rf ./post_install_tmp
-fi
-mkdir ./post_install_tmp
-cd post_install_tmp
+function clean_temp_files()
+{
+	if [ -a ~/post_install_tmp ]; then
+	    echo "Removendo arquivos temporários..."
+	    rm -rf ~/post_install_tmp
+	fi
+}
+cd ~/
+
+clean_temp_files
+mkdir ~/post_install_tmp
+cd ~/post_install_tmp
 
 
 #Proceed with mandatory installation procedures
@@ -250,9 +258,9 @@ cd post_install_tmp
 #install_mandatories
 
 #Get SCM list
-#DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." git node`
+DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." git node vs-code`
 PACKAGE_MANAGERS=`dialog_multi_choice "Selecione os gerenciadores de pacote que pretende instalar." composer npm nvm`
-#SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome vs_code git`
+SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome`
 
 
 #***********************************************************************************
@@ -275,4 +283,39 @@ function install_package_managers()
 	done
 }
 
+#***********************************************************************************
+#	SOURCE CONTROL MANAGERS
+#***********************************************************************************
+function install_dev_tools()
+{
+	for i in $DEV_TOOLS; do
+		case $i in
+		"git")
+			aptinstall GIT git && git -v;;
+		"node")
+			aptinstall NODE nodejs && nodejs -v;;
+		"vs-code")
+			sudo snap install --classic code # or code-insiders;;
+		esac
+	done
+}
+
+#***********************************************************************************
+#	SOURCE CONTROL MANAGERS
+#***********************************************************************************
+function install_softwares()
+{
+	for i in $SOFTWARES; do
+		case $i in
+		"chrome")
+			wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb;;
+		esac
+	done
+}
+
 install_package_managers
+install_dev_tools
+install_softwares
+
+sudo apt-get autoremove
+clean_temp_files
