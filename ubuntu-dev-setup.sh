@@ -246,7 +246,6 @@ function clean_temp_files()
 	    rm -rf ~/post_install_tmp
 	fi
 }
-cd ~/
 
 clean_temp_files
 mkdir ~/post_install_tmp
@@ -258,50 +257,51 @@ cd ~/post_install_tmp
 #install_mandatories
 
 #Get SCM list
-DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." git node vs-code`
-PACKAGE_MANAGERS=`dialog_multi_choice "Selecione os gerenciadores de pacote que pretende instalar." composer npm nvm`
-SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome`
+DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code flutter android-studio docker git node composer npm nvm`
+SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp`
 
 
 #***********************************************************************************
-#	SOURCE CONTROL MANAGERS
-#***********************************************************************************
-function install_package_managers()
-{
-	for i in $PACKAGE_MANAGERS; do
-		case $i in
-		"composer")
-			$APTGETCMD -y install composer
-			composer -v;;
-		"npm")
-			$APTGETCMD -y install npm
-			npm -v;;
-		"nvm")
-			$APTGETCMD -y install nvm
-			nvm -v;;
-		esac
-	done
-}
-
-#***********************************************************************************
-#	SOURCE CONTROL MANAGERS
+#	DEV TOOLS
 #***********************************************************************************
 function install_dev_tools()
 {
 	for i in $DEV_TOOLS; do
 		case $i in
+		"composer")
+			aptinstall COMPOSER composer
+			composer -v;;
+		"npm")
+			aptinstall NPM npm
+			npm -v;;
+		"nvm")
+			aptinstall NVM nvm
+			nvm -v;;
 		"git")
 			aptinstall GIT git && git -v;;
 		"node")
 			aptinstall NODE nodejs && nodejs -v;;
 		"vs-code")
-			sudo snap install --classic code # or code-insiders;;
+			echo '==========================================='
+    		echo 'installing NODE'
+			sudo snap install code --classic;; # or code-insiders
+		"flutter")
+			echo '==========================================='
+    		echo 'installing FLUTTER'
+			sudo snap install flutter --classic;;
+		"android-studio")
+			sudo snap install android-studio --classic;;
+		"docker")
+		 	echo '==========================================='
+    		echo 'installing DOCKER'
+			sudo apt-get remove docker docker-engine docker.io containerd runc; 
+			sudo curl -fsSL https://get.docker.com -o get-docker.sh && sudo sh get-docker.sh;;
 		esac
 	done
 }
 
 #***********************************************************************************
-#	SOURCE CONTROL MANAGERS
+#	OTHER SOFTWARES
 #***********************************************************************************
 function install_softwares()
 {
@@ -309,13 +309,17 @@ function install_softwares()
 		case $i in
 		"chrome")
 			wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb;;
+		"gimp")
+			aptinstall GIMP gimp;;
 		esac
 	done
 }
 
-install_package_managers
 install_dev_tools
 install_softwares
 
 sudo apt-get autoremove
 clean_temp_files
+
+echo '==========================================='
+echo 'INSTALAÇÃO FINALIZADA'
