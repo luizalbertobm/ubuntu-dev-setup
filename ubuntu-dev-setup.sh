@@ -315,8 +315,38 @@ function install_softwares()
 	done
 }
 
+#***********************************************************************************
+#	VS CODE EXTENSIONS
+#***********************************************************************************
+function install_vs_code_extensions()
+{
+	for i in $SOFTWARES; do
+		case $i in
+		"pt-br")
+			code --install-extension ms-ceintl.vscode-language-pack-pt-br
+			code --enable-proposed-api ms-ceintl.vscode-language-pack-pt-br;;
+		"html-css")
+			code --install-extension ecmel.vscode-html-css;;
+		"dart")
+			code --install-extension dart-code.dart-code;;
+		"flutter")
+			code --install-extension dart-code.flutter;;
+		"docker")
+			code --install-extension ms-azuretools.vscode-docker;;
+		"php-intelephense")
+			code --install-extension bmewburn.vscode-intelephense-client;;
+		"php-debug")
+			code --install-extension felixfbecker.php-debug;;
+		"php-vue")
+			code --install-extension jcbuisson.vue
+			code --install-extension hollowtree.vue-snippets;;
+		esac
+	done
+}
+
 install_dev_tools
 install_softwares
+install_vs_code_extensions
 
 sudo apt-get autoremove
 clean_temp_files
