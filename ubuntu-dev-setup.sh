@@ -290,7 +290,8 @@ function install_dev_tools()
     		echo 'installing FLUTTER'
 			sudo snap install flutter --classic;;
 		"android-studio")
-			sudo snap install android-studio --classic;;
+			sudo snap install android-studio --classic
+			sudo apt-get install android-tools-adb android-tools-fastboot;;
 		"docker")
 		 	echo '==========================================='
     		echo 'installing DOCKER'
