@@ -211,9 +211,9 @@ function install_mandatories()
 	aptinstall SNAP snap
 	aptinstall WGET wget
 	aptinstall SSH ssh
-    aptinstall CURL curl
+	aptinstall CURL curl
 	aptinstall SAMBA samba 
-    aptinstall "SAMBA FILE SYSTEM" smbfs
+	aptinstall "SAMBA FILE SYSTEM" smbfs
 }
 
 #***********************************************************************************
@@ -259,6 +259,7 @@ cd ~/post_install_tmp
 #Get SCM list
 DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code flutter android-studio docker git node composer npm nvm`
 SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp`
+SOFTWARES=`dialog_multi_choice "Escolha as extensões do vs-coed para instalar." pt-br html-css dart flutter docker php-intelephense php-debug vue`
 
 
 #***********************************************************************************
@@ -338,7 +339,7 @@ function install_vs_code_extensions()
 			code --install-extension bmewburn.vscode-intelephense-client;;
 		"php-debug")
 			code --install-extension felixfbecker.php-debug;;
-		"php-vue")
+		"vue")
 			code --install-extension jcbuisson.vue
 			code --install-extension hollowtree.vue-snippets;;
 		esac
