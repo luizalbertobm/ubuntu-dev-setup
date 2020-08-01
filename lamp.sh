@@ -49,12 +49,13 @@ aptinstall apache2 mysql-server php libapache2-mod-php php-cli
 # Install PHP Modules
 aptinstall libapache2-mod-php php php-common php-curl php-dev php-gd php-pear php-imagick php-ps php-pspell php-xsl php-mbstring
 
-sudo apt autoremove
+sudo apt autoremove -y
 
 # Install Adminer
 echo -e "$Green \n »0 INSTALLING Adminer $Color_Off"
 cd /var/www/html/
 git clone https://github.com/pematon/adminer-custom.git adminer
+sudo wget https://github.com/vrana/adminer/releases/download/v4.7.7/adminer-4.7.7.php -O adminer/adminer.php
 
 # Allow to run Apache on boot up
 echo -e "$Yellow \n » Allowing to run Apache on boot up $Color_Off"
@@ -70,8 +71,8 @@ sudo ufw allow in "Apache Full"
 
 # Allow Read/Write for Owner
 echo -e "$Yellow \n » Allowing Read/Write for Owner $Color_Off"
-sudo chmod -R 0755 /var/www/html/
-sudo chown -R www-data:www-data /var/www  
+sudo chmod -R 0777 /var/www/
+#sudo chown -R www-data:www-data /var/www  
 
 # Create info.php for testing php processing
 echo -e "$Yellow \n » Creating info.php $Color_Off"

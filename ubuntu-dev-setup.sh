@@ -251,7 +251,7 @@ function install_dev_tools()
 			aptinstall NODE nodejs && nodejs -v;;
 		"vs-code")
 			echo '==========================================='
-    		echo 'installing NODE'
+    		echo 'installing VS-CODE'
 			sudo snap install code --classic;; # or code-insiders
 		"flutter")
 			echo '==========================================='
@@ -280,6 +280,12 @@ function install_softwares()
 			wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && sudo apt install ./google-chrome-stable_current_amd64.deb;;
 		"gimp")
 			aptinstall GIMP gimp;;
+		"office-writer")
+			aptinstall OFFICE libre-office-writer;;
+		"office-calc")
+			aptinstall OFFICE libre-office-calc;;
+		"postman")
+			snapinstall POSTMAN postman;;
 		esac
 	done
 }
@@ -289,7 +295,7 @@ function install_softwares()
 #***********************************************************************************
 function install_vs_code_extensions()
 {
-	for i in $SOFTWARES; do
+	for i in $VSCODE_EXTENSIONS; do
 		case $i in
 		"pt-br")
 			code --install-extension ms-ceintl.vscode-language-pack-pt-br
@@ -319,17 +325,28 @@ function install_vs_code_extensions()
 function install_themes(){
 	
 	aptinstall GNOME-SHELL-EXTENSIONS gnome-shell-extensions
+	aptinstall libqt5svg5 qml-module-qtquick-controls
 	aptinstall CHROME-SHELL-INTEGRATION chrome-gnome-shell
 	aptinstall gnome-shell-extension-weather
 	aptinstall gnome-shell-extension-ubuntu-dock
 	aptinstall gnome-shell-extension-bluetooth-quick-connect
 	aptinstall gnome-tweak-tool
+
+	#changing login screen
+	sudo cp $DIR/login-theme/bg-login.png /usr/share/backgrounds/
+	sudo cp /usr/share/gnome-shell/theme/ubuntu.css /usr/share/gnome-shell/theme/ubuntu.bk
+	sudo cp $DIR/login-theme/ubuntu.css /usr/share/gnome-shell/theme/
+
+	#changing grub theme
+	. $DIR/grub-theme/install.sh
+
 }
 
 #***********************************************************************************
 #*** Initialization ***
 #***********************************************************************************
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 clean_temp_files
 mkdir ~/post_install_tmp
 cd ~/post_install_tmp
@@ -350,24 +367,18 @@ if [ $NEXT -eq 1 ]; then
     exit 0
 fi
 
+DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code android-studio flutter docker git node composer npm nvm`
+SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp postman office-writer office-calc`
+VSCODE_EXTENSIONS=`dialog_multi_choice "Escolha as extensões do vs-code para instalar." pt-br html-css dart flutter docker php-intelephense php-debug vue`
+THEMES=`dialog_question "Deseja instalar extensões e temas?" "Será configurado temas para o shell do gnome e a instalaçao de algumas extensões."`
+
 #Proceed with mandatory installation procedures
 update_packages
 install_mandatories
-DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code flutter android-studio docker git node composer npm nvm`
-SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp`
-SOFTWARES=`dialog_multi_choice "Escolha as extensões do vs-coed para instalar." pt-br html-css dart flutter docker php-intelephense php-debug vue`
-THEMES=`dialog_question "Deseja instalar extensões e temas?" "Será configurado temas para o shell do gnome e a instalaçao de algumas extensões."`
-
-function teste(){
-	sudo apt install -f -y $@
-}
-
 install_dev_tools
 install_softwares
 install_vs_code_extensions
-install_themes
-echo $THEMES
-echo "**************************************"
+#install_themes
 
 sudo apt-get autoremove
 clean_temp_files
