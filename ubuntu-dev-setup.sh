@@ -11,7 +11,7 @@ function aptinstall {
     echo ===========================================
     echo installing $1
     shift
-    sudo apt-get -y -f install "$@"
+    sudo apt-get -y -f -qq install "$@"
 }
 
 function snapinstall {
@@ -183,6 +183,8 @@ function dialog_question()
 	else
 		$DIALOG --title "$TITLE" --yesno "$TEXT" 20 80
 	fi
+	THEMES=$?
+	return $THEMES
 }
 
 
@@ -217,26 +219,6 @@ function install_mandatories()
 }
 
 #***********************************************************************************
-#*** Initialization ***
-#***********************************************************************************
-
-#Set Dialog tool
-DIALOG=
-DIALOG_TYPE=
-find_dialog
-
-#dialog_question "Instalação?" "Tem certeza disto?"
-#dialog_multi_choice "Quais voce quer instalar?" b2 c3
-#dialog_line_input param1 param2 
-#dialog_msgbox param1 param2
-#dialog_menu param1 param2 param3
-
-show_welcome_msg
-if [ $NEXT -eq 1 ]; then
-    exit 0
-fi
-
-#***********************************************************************************
 #	CREATE TEMPORARY FOLDER
 #***********************************************************************************
 function clean_temp_files()
@@ -246,21 +228,6 @@ function clean_temp_files()
 	    rm -rf ~/post_install_tmp
 	fi
 }
-
-clean_temp_files
-mkdir ~/post_install_tmp
-cd ~/post_install_tmp
-
-
-#Proceed with mandatory installation procedures
-#update_packages
-#install_mandatories
-
-#Get SCM list
-DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code flutter android-studio docker git node composer npm nvm`
-SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp`
-SOFTWARES=`dialog_multi_choice "Escolha as extensões do vs-coed para instalar." pt-br html-css dart flutter docker php-intelephense php-debug vue`
-
 
 #***********************************************************************************
 #	DEV TOOLS
@@ -346,9 +313,61 @@ function install_vs_code_extensions()
 	done
 }
 
+#***********************************************************************************
+#	CONFIGURE THEME
+#***********************************************************************************
+function install_themes(){
+	
+	aptinstall GNOME-SHELL-EXTENSIONS gnome-shell-extensions
+	aptinstall CHROME-SHELL-INTEGRATION chrome-gnome-shell
+	aptinstall gnome-shell-extension-weather
+	aptinstall gnome-shell-extension-ubuntu-dock
+	aptinstall gnome-shell-extension-bluetooth-quick-connect
+	aptinstall gnome-tweak-tool
+}
+
+#***********************************************************************************
+#*** Initialization ***
+#***********************************************************************************
+
+clean_temp_files
+mkdir ~/post_install_tmp
+cd ~/post_install_tmp
+
+#Set Dialog tool
+DIALOG=
+DIALOG_TYPE=
+find_dialog
+
+#dialog_question "Instalação?" "Tem certeza disto?"
+#dialog_multi_choice "Quais voce quer instalar?" b2 c3
+#dialog_line_input param1 param2 
+#dialog_msgbox param1 param2
+#dialog_menu param1 param2 param3
+
+show_welcome_msg
+if [ $NEXT -eq 1 ]; then
+    exit 0
+fi
+
+#Proceed with mandatory installation procedures
+update_packages
+install_mandatories
+DEV_TOOLS=`dialog_multi_choice "Selecione as ferramentas que pretende instalar." vs-code flutter android-studio docker git node composer npm nvm`
+SOFTWARES=`dialog_multi_choice "Please choose the source control manager you want to install." chrome gimp`
+SOFTWARES=`dialog_multi_choice "Escolha as extensões do vs-coed para instalar." pt-br html-css dart flutter docker php-intelephense php-debug vue`
+THEMES=`dialog_question "Deseja instalar extensões e temas?" "Será configurado temas para o shell do gnome e a instalaçao de algumas extensões."`
+
+function teste(){
+	sudo apt install -f -y $@
+}
+
 install_dev_tools
 install_softwares
 install_vs_code_extensions
+install_themes
+echo $THEMES
+echo "**************************************"
 
 sudo apt-get autoremove
 clean_temp_files
