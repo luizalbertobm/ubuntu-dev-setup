@@ -248,6 +248,7 @@ function install_dev_tools()
 		"git")
 			aptinstall GIT git && git -v;;
 		"node")
+			curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 			aptinstall NODE nodejs && nodejs -v;;
 		"vs-code")
 			echo '==========================================='
@@ -312,34 +313,13 @@ function install_vs_code_extensions()
 			code --install-extension bmewburn.vscode-intelephense-client;;
 		"php-debug")
 			code --install-extension felixfbecker.php-debug;;
+		"material-icon-theme")
+			code --install-extension pkief.material-icon-theme;;
 		"vue")
 			code --install-extension jcbuisson.vue
 			code --install-extension hollowtree.vue-snippets;;
 		esac
 	done
-}
-
-#***********************************************************************************
-#	CONFIGURE THEME
-#***********************************************************************************
-function install_themes(){
-	
-	aptinstall GNOME-SHELL-EXTENSIONS gnome-shell-extensions
-	aptinstall libqt5svg5 qml-module-qtquick-controls
-	aptinstall CHROME-SHELL-INTEGRATION chrome-gnome-shell
-	aptinstall gnome-shell-extension-weather
-	aptinstall gnome-shell-extension-ubuntu-dock
-	aptinstall gnome-shell-extension-bluetooth-quick-connect
-	aptinstall gnome-tweak-tool
-
-	#changing login screen
-	sudo cp $DIR/login-theme/bg-login.png /usr/share/backgrounds/
-	sudo cp /usr/share/gnome-shell/theme/ubuntu.css /usr/share/gnome-shell/theme/ubuntu.bk
-	sudo cp $DIR/login-theme/ubuntu.css /usr/share/gnome-shell/theme/
-
-	#changing grub theme
-	. $DIR/grub-theme/install.sh
-
 }
 
 #***********************************************************************************
